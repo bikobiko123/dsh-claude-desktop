@@ -39,7 +39,14 @@ test.beforeAll(async () => {
 })
 
 test.afterAll(async () => {
-  await application?.close()
+  if (application) {
+    const electronProcess = application.process()
+    await Promise.race([
+      application.close(),
+      new Promise<void>((resolve) => setTimeout(resolve, 5_000)),
+    ])
+    if (electronProcess.exitCode === null && electronProcess.signalCode === null) electronProcess.kill('SIGKILL')
+  }
   if (fakeBinDir) await rm(fakeBinDir, { recursive: true, force: true })
 })
 
