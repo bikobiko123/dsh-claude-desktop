@@ -1,6 +1,6 @@
 {
   "name": "dsh-claude-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Independent Claude-inspired desktop client scaffold for DeepSeek Harness.",
   "type": "module",
@@ -31,6 +31,8 @@
   "dependencies": {
     "@deepseek-ai/cordis": "4.0.1",
     "@deepseek-ai/dsh-client-runtime": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-schema-form": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-compaction": "0.1.0-rc.6",
     "@deepseek-ai/dsh-host-apiproxy": "0.1.0-rc.6",
     "@vitejs/plugin-react": "6.0.5",
     "react": "18.3.1",

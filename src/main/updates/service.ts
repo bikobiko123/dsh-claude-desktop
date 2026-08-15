@@ -9,7 +9,7 @@ import type { UpdateState } from '../../shared/update-contract.js'
 const OWNER = 'bikobiko123'
 const REPOSITORY = 'dsh-claude-desktop'
 const RELEASE_API = `https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest`
-const CHECKSUM_ASSET = 'checksums.txt'
+const CHECKSUM_ASSET = 'SHA256SUMS.txt'
 const MAX_MANIFEST_BYTES = 1024 * 1024
 const MAX_METADATA_BYTES = 2 * 1024 * 1024
 const MAX_ARTIFACT_BYTES = 1024 * 1024 * 1024
@@ -48,7 +48,7 @@ export function isSemanticallyNewer(candidate: string, current: string): boolean
 
 export function artifactName(version: string, arch: string): string {
   if (arch !== 'arm64' && arch !== 'x64') throw new Error('This macOS architecture is not supported by published updates.')
-  return `DSH-Desktop-${version}-mac-${arch}.dmg`
+  return `DSH-Desktop-${version}-mac-${arch}.zip`
 }
 
 export function checksumForArtifact(manifest: string, fileName: string): string | undefined {
