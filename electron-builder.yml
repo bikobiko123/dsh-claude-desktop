@@ -1,0 +1,30 @@
+appId: com.dshdesktop.client
+productName: DSH Desktop
+asar: true
+npmRebuild: false
+directories:
+  output: release
+files:
+  - dist/**/*
+  - package.json
+  - node_modules/ws/**/*
+  - '!dist/**/*.map'
+  - '!dist/**/*.test.*'
+  - '!dist/**/__tests__/**'
+  - '!**/.DS_Store'
+  - '!**/*.log'
+mac:
+  artifactName: DSH-Desktop-${version}-mac-${arch}.${ext}
+  target:
+    - target: zip
+      arch:
+        - arm64
+        - x64
+  identity: null
+win:
+  target:
+    - target: dir
+      arch:
+        - x64
+  signAndEditExecutable: false
+linux: null

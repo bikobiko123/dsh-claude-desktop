@@ -1,0 +1,61 @@
+{
+  "name": "dsh-claude-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Independent Claude-inspired desktop client scaffold for DeepSeek Harness.",
+  "type": "module",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"tsc -p tsconfig.main.json --watch --preserveWatchOutput\" \"esbuild src/preload/index.ts --bundle --platform=node --format=cjs --outfile=dist/preload/index.cjs --external:electron --watch\" \"wait-on tcp:5173 file:dist/main/index.js file:dist/preload/index.cjs && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "build": "npm run clean && npm run build:renderer && npm run build:electron",
+    "build:renderer": "vite build",
+    "build:electron": "tsc -p tsconfig.main.json && npm run build:preload",
+    "build:preload": "esbuild src/preload/index.ts --bundle --platform=node --format=cjs --outfile=dist/preload/index.cjs --external:electron",
+    "build:dir": "npm run build && electron-builder --dir",
+    "build:dir:mac": "npm run build && electron-builder --mac --dir",
+    "build:release:mac": "npm run build && electron-builder --mac zip --arm64 --x64 --publish never",
+    "build:dir:win": "npm run build && electron-builder --win --dir",
+    "check:dsh": "node scripts/check-dsh-compat.mjs",
+    "check:registrar": "node scripts/check-conversation-registrar.mjs",
+    "smoke:packaged": "node scripts/smoke-packaged.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.main.json --noEmit",
+    "clean": "node -e \"import('node:fs').then(({rmSync})=>rmSync('dist',{recursive:true,force:true}))\"",
+    "preview": "vite preview --host 127.0.0.1",
+    "start": "electron .",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "npm run build && playwright test",
+    "test:smoke": "npm run test:e2e",
+    "verify": "npm run check:registrar && npm run test:dsh-compat && npm run typecheck && npm test && npm run build",
+    "test:dsh-compat": "vitest run src/main/dsh/compat-core.test.ts src/main/dsh/sidecar.test.ts"
+  },
+  "dependencies": {
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-client-runtime": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-host-apiproxy": "0.1.0-rc.6",
+    "@vitejs/plugin-react": "6.0.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "vite": "8.2.1",
+    "ws": "8.21.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.2.1",
+    "@playwright/test": "1.55.1",
+    "@types/node": "26.2.0",
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.7",
+    "@types/ws": "8.18.1",
+    "concurrently": "10.0.4",
+    "cross-env": "10.1.0",
+    "electron": "43.4.0",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10",
+    "wait-on": "9.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

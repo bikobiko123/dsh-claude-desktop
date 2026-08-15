@@ -1,0 +1,67 @@
+name: Release unsigned macOS artifacts
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-14
+    strategy:
+      matrix:
+        arch: [arm64, x64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Verify tag matches package version
+        shell: bash
+        run: |
+          test "${GITHUB_REF_NAME}" = "v$(node -p "require('./package.json').version")"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Build exact macOS architecture archive
+        run: npm run build && npx electron-builder --mac zip --${{ matrix.arch }} --publish never
+      - name: Verify artifact name
+        shell: bash
+        run: test -f "release/DSH-Desktop-$(node -p "require('./package.json').version")-mac-${{ matrix.arch }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-${{ matrix.arch }}
+          path: release/DSH-Desktop-*-mac-${{ matrix.arch }}.zip
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mac-*
+          merge-multiple: true
+          path: release
+      - name: Create checksum manifest
+        shell: bash
+        run: |
+          cd release
+          sha256sum DSH-Desktop-*-mac-arm64.zip DSH-Desktop-*-mac-x64.zip > SHA256SUMS.txt
+          test "$(wc -l < SHA256SUMS.txt)" -eq 2
+      - name: Publish GitHub Release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release/DSH-Desktop-*-mac-arm64.zip
+            release/DSH-Desktop-*-mac-x64.zip
+            release/SHA256SUMS.txt
