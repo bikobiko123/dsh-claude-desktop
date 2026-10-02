@@ -167,3 +167,13 @@ The renderer must not import internal DSH implementation details directly. A fut
 ## Branding
 
 The interface is visually inspired by Claude Desktop, but this project is not affiliated with Anthropic. Public distribution should use an original product name, icon, and licensed font assets.
+
+## AI 与云端协作
+
+- 项目用途：基于 Electron 的独立 DeepSeek Harness 桌面客户端。
+- AI 工作入口：[AGENTS.md](AGENTS.md)。
+- 环境：Node.js >=22；npm ci。
+- 主要目录：src/main/、src/preload/、src/renderer/、src/shared/、tests/、scripts/、SECURITY.md、DSH_HEADLESS.md。
+- 验证边界：云端可做类型检查、单元测试与构建；真实桌面、macOS 打包与 DSH 联调需对应系统环境。DSH 固定兼容 0.1.0-rc.6；不能将纯 UI 或 mock 验证写成完整 Harness 联调完成。
+
+云端任务交付应包含修改说明、实际验证结果和剩余限制；个人本机改动未提交并推送前，云端无法读取。
